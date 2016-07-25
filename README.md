@@ -1,3 +1,57 @@
+# 简明使用教程
+
+1. 使用`go get -u github.com/kardianos/govendor`将该包下载到$GOPATH/src，尝试运行govendor命令，如果不能运行，说明该包还未安装。在src/kardianos/govendor目录下，运行`go build main.go`，并将生成的二进制文件main重命名为govendor并复制到/usr/bin下。
+
+2. 以一个项目govendor-example为例，它建立在$GOPATH/src下，首先对它进行`govendor init`操作，然后`govendor list`列出所需要的第三方包：
+
+![](http://7xiwbf.com1.z0.glb.clouddn.com/2govendorlist.png)
+
+提示缺失第三方包github.com/gorilla/mux，使用`govendor get`下载该包并再次`govendor list`，得到：
+
+![](http://7xiwbf.com1.z0.glb.clouddn.com/2govendorlist2.png)
+
+标志e表示mux包已经存在于本地，但未包含，提示缺失第三方包github.com/gorilla/context，再次使用`govendor get`下载该包：
+
+![](http://7xiwbf.com1.z0.glb.clouddn.com/2govendorlist3.png)
+
+使用命令`govendor add +external`将这两个包添加到项目里(这两个包会导入到vendor目录下)：
+
+![](http://7xiwbf.com1.z0.glb.clouddn.com/2govendorlist5.png)
+
+这个时候可以查看vendor/vendor.json文件，得到第三方包的基本信息：
+
+![](http://7xiwbf.com1.z0.glb.clouddn.com/2vendorjson.png)
+
+如果需要获取指定版本的包，可以使用命令`govendor fetch golang.org/x/net/context@=v1`，更新context包为v1.1。这个包会存在vendor目录里，再次查看vendor.json：
+
+![](http://7xiwbf.com1.z0.glb.clouddn.com/2vendorjson2.png)
+
+
+`govendor fetch`提供了三种指定包版本的方式：
+
+```
+govendor fetch golang.org/x/net/context@a4bbce9fcae005b22ae5443f6af064d80a6f5a55
+govendor fetch golang.org/x/net/context@v1   # Get latest v1.*.* tag or branch.
+govendor fetch golang.org/x/net/context@=v1  # Get the tag or branch named "v1".
+```
+
+这里第一种方式里，后面的长字符串指的是commit的序号，可以在相应的项目commit记录里找到，它也与vendor/vendor.json里面的值对应起来：
+
+![](http://7xiwbf.com1.z0.glb.clouddn.com/commitserial.png) 
+![](http://7xiwbf.com1.z0.glb.clouddn.com/2govenderjson3.png)
+
+
+可以采用`govendor update`或`govendor remove`来更新或移除特定的包。update会将该包的最新版本(commit)导入，remove会将vendor目录下的包删除。
+
+*ISSUE*:
+假设使用命令`govendor fetch xxxx@=vx`失败，比如遇到网路问题没能下载成功，但是通过`govendor list`和`cat vendor/vendor.json`会发现版本已经更改为了vx，具体的是version显示新版本，versionExact显示旧版本。
+
+
+
+
+
+
+
 # The Vendor Tool for Go
 `go get -u github.com/kardianos/govendor`
 
